@@ -120,22 +120,29 @@ function syncVideoPair(slide) {
     if (++ready < 2) return;
     var d0 = videos[0].duration;
     var d1 = videos[1].duration;
-    if (!isFinite(d0) || !isFinite(d1) || d0 === d1) return;
+    if (!isFinite(d0) || !isFinite(d1)) return;
 
     var longer  = d0 >= d1 ? videos[0] : videos[1];
     var shorter = d0 <  d1 ? videos[0] : videos[1];
-    longer.playbackRate = longer.duration / shorter.duration;
+    videos.forEach(function (v) { v.playbackRate = 1; });
 
     longer.loop  = false;
     shorter.loop = false;
 
-    longer.addEventListener("ended", function () { longer.pause(); });
-    shorter.addEventListener("ended", function () {
+    var restarting = false;
+    var restartPair = function () {
+      if (restarting) return;
+      restarting = true;
       longer.currentTime  = 0;
       shorter.currentTime = 0;
       longer.play();
       shorter.play();
-    });
+      setTimeout(function () { restarting = false; }, 100);
+    };
+
+    longer.addEventListener("ended", restartPair);
+    shorter.addEventListener("ended", restartPair);
+    restartPair();
   };
   videos.forEach(function (v) {
     if (v.readyState >= 1) check();
