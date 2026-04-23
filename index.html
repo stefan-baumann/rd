@@ -146,6 +146,44 @@
       </div>
     </section>
 
+    <!-- ==================== VIDEO SAMPLES ==================== -->
+    <section class="section" id="video-samples">
+      <div class="container is-max-desktop">
+        <p class="content paper-copy" style="margin: 0 0 0.75rem;"><span style="color: #2eb134; font-weight: 700;">Zero-shot</span> qualitative video samples on DL3DV-10K.</p>
+
+        <div class="video-carousel" id="qualitativeCarousel">
+          <div class="carousel-viewport">
+            <div class="carousel-slide active">
+              <div class="video-item">
+                <video autoplay loop muted playsinline>
+                  <source src="static/videos/video_grid_1_h264.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
+            <div class="carousel-slide">
+              <div class="video-item">
+                <video autoplay loop muted playsinline>
+                  <source src="static/videos/video_grid_2_h264.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
+          </div>
+          <div class="carousel-controls">
+            <button class="carousel-btn" onclick="carouselPrev('qualitativeCarousel')" aria-label="Previous qualitative sample">
+              <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+            </button>
+            <div class="carousel-dots">
+              <button class="carousel-dot active" onclick="carouselGoTo(0, 'qualitativeCarousel')" aria-label="Qualitative sample 1"></button>
+              <button class="carousel-dot" onclick="carouselGoTo(1, 'qualitativeCarousel')" aria-label="Qualitative sample 2"></button>
+            </div>
+            <button class="carousel-btn" onclick="carouselNext('qualitativeCarousel')" aria-label="Next qualitative sample">
+              <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ==================== TL;DR ==================== -->
     <section class="section hero is-light" id="tldr">
       <div class="hero-body">
@@ -722,38 +760,6 @@
           </figcaption>
         </figure>
 
-        <p class="content paper-copy" style="margin: 1.5rem 0 0.75rem;">Zero-shot qualitative video samples.</p>
-
-        <div class="video-carousel" id="qualitativeCarousel" style="margin-bottom: 1.5rem;">
-          <div class="carousel-viewport">
-            <div class="carousel-slide active">
-              <div class="video-item">
-                <video autoplay loop muted playsinline>
-                  <source src="static/videos/video_grid_1_h264.mp4" type="video/mp4">
-                </video>
-              </div>
-            </div>
-            <div class="carousel-slide">
-              <div class="video-item">
-                <video autoplay loop muted playsinline>
-                  <source src="static/videos/video_grid_2_h264.mp4" type="video/mp4">
-                </video>
-              </div>
-            </div>
-          </div>
-          <div class="carousel-controls">
-            <button class="carousel-btn" onclick="carouselPrev('qualitativeCarousel')" aria-label="Previous qualitative sample">
-              <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-            </button>
-            <div class="carousel-dots">
-              <button class="carousel-dot active" onclick="carouselGoTo(0, 'qualitativeCarousel')" aria-label="Qualitative sample 1"></button>
-              <button class="carousel-dot" onclick="carouselGoTo(1, 'qualitativeCarousel')" aria-label="Qualitative sample 2"></button>
-            </div>
-            <button class="carousel-btn" onclick="carouselNext('qualitativeCarousel')" aria-label="Next qualitative sample">
-              <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-            </button>
-          </div>
-        </div>
       </div>
     </section>
 
