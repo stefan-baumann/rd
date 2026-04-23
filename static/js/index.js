@@ -108,9 +108,25 @@ window.addEventListener("scroll", () => {
 
 /* ── Video Carousel ──────────────────────────────── */
 
-var carouselCurrent = 0;
-var carouselTimer = null;
-var carouselCleanup = null;
+var carouselStates = {};
+
+function getCarousel(carouselRef) {
+  if (carouselRef && carouselRef.nodeType === 1) return carouselRef;
+  if (typeof carouselRef === "string") return document.getElementById(carouselRef);
+  return document.getElementById("videoCarousel");
+}
+
+function getCarouselState(carousel) {
+  var id = carousel.id || "carousel-" + Array.prototype.indexOf.call(document.querySelectorAll(".video-carousel"), carousel);
+  if (!carouselStates[id]) {
+    carouselStates[id] = {
+      current: 0,
+      timer: null,
+      cleanup: null
+    };
+  }
+  return carouselStates[id];
+}
 
 function syncVideoPair(slide) {
   var videos = slide.querySelectorAll("video");
@@ -150,27 +166,36 @@ function syncVideoPair(slide) {
   });
 }
 
-document.querySelectorAll("#videoCarousel .carousel-slide").forEach(syncVideoPair);
+document.querySelectorAll(".video-carousel .carousel-slide").forEach(syncVideoPair);
 
-function carouselFinish() {
-  if (carouselCleanup) { carouselCleanup(); carouselCleanup = null; }
+function carouselFinish(carouselRef) {
+  var carousel = getCarousel(carouselRef);
+  if (!carousel) return;
+  var state = getCarouselState(carousel);
+  if (state.cleanup) {
+    state.cleanup();
+    state.cleanup = null;
+  }
 }
 
-function carouselGoTo(idx) {
-  var slides = document.querySelectorAll("#videoCarousel .carousel-slide");
-  var dots = document.querySelectorAll("#videoCarousel .carousel-dot");
+function carouselGoTo(idx, carouselRef) {
+  var carousel = getCarousel(carouselRef);
+  if (!carousel) return;
+  var state = getCarouselState(carousel);
+  var slides = carousel.querySelectorAll(".carousel-slide");
+  var dots = carousel.querySelectorAll(".carousel-dot");
   if (!slides.length) return;
 
   var newIdx = ((idx % slides.length) + slides.length) % slides.length;
-  if (newIdx === carouselCurrent) return;
+  if (newIdx === state.current) return;
 
-  carouselFinish();
+  carouselFinish(carousel);
 
-  var forward = newIdx > carouselCurrent;
-  if (carouselCurrent === slides.length - 1 && newIdx === 0) forward = true;
-  if (carouselCurrent === 0 && newIdx === slides.length - 1) forward = false;
+  var forward = newIdx > state.current;
+  if (state.current === slides.length - 1 && newIdx === 0) forward = true;
+  if (state.current === 0 && newIdx === slides.length - 1) forward = false;
 
-  var oldSlide = slides[carouselCurrent];
+  var oldSlide = slides[state.current];
   var newSlide = slides[newIdx];
   var animClasses = ["exit-left", "exit-right", "enter-left", "enter-right"];
 
@@ -178,34 +203,48 @@ function carouselGoTo(idx) {
   oldSlide.classList.add(forward ? "exit-left" : "exit-right");
   newSlide.classList.add("active", forward ? "enter-right" : "enter-left");
 
-  carouselCleanup = function () {
+  state.cleanup = function () {
     animClasses.forEach(function (c) {
       oldSlide.classList.remove(c);
       newSlide.classList.remove(c);
     });
-    carouselCleanup = null;
+    state.cleanup = null;
   };
-  newSlide.addEventListener("animationend", carouselCleanup, { once: true });
+  newSlide.addEventListener("animationend", state.cleanup, { once: true });
 
-  if (dots[carouselCurrent]) dots[carouselCurrent].classList.remove("active");
+  if (dots[state.current]) dots[state.current].classList.remove("active");
   if (dots[newIdx]) dots[newIdx].classList.add("active");
 
-  carouselCurrent = newIdx;
+  state.current = newIdx;
 
   newSlide.querySelectorAll("video").forEach(function (v) {
     v.currentTime = 0;
     v.play();
   });
 
-  resetCarouselTimer();
+  resetCarouselTimer(carousel);
 }
 
-function carouselNext() { carouselGoTo(carouselCurrent + 1); }
-function carouselPrev() { carouselGoTo(carouselCurrent - 1); }
-
-function resetCarouselTimer() {
-  if (carouselTimer) clearInterval(carouselTimer);
-  carouselTimer = setInterval(carouselNext, 7000);
+function carouselNext(carouselRef) {
+  var carousel = getCarousel(carouselRef);
+  if (!carousel) return;
+  var state = getCarouselState(carousel);
+  carouselGoTo(state.current + 1, carousel);
 }
 
-if (document.querySelector("#videoCarousel")) resetCarouselTimer();
+function carouselPrev(carouselRef) {
+  var carousel = getCarousel(carouselRef);
+  if (!carousel) return;
+  var state = getCarouselState(carousel);
+  carouselGoTo(state.current - 1, carousel);
+}
+
+function resetCarouselTimer(carouselRef) {
+  var carousel = getCarousel(carouselRef);
+  if (!carousel) return;
+  var state = getCarouselState(carousel);
+  if (state.timer) clearInterval(state.timer);
+  state.timer = setInterval(function () { carouselNext(carousel); }, 7000);
+}
+
+document.querySelectorAll(".video-carousel").forEach(resetCarouselTimer);
